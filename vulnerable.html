@@ -1,0 +1,16 @@
+<h2>Current Name: <span id="name-display">John Doe</span></h2>
+
+<button onclick="applyUpdate()">Apply Profile Update</button>
+
+<script>
+  function applyUpdate() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const nameFromUrl = urlParams.get('name');
+    if (nameFromUrl) {
+      document.getElementById('name-display').textContent = nameFromUrl;
+      alert('Your display name has been forcibly changed!');
+    } else {
+      alert('No changes detected.');
+    }
+  }
+</script>

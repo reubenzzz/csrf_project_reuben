@@ -1,16 +1,38 @@
-<h2>Current Name: <span id="name-display">John Doe</span></h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vulnerable Account Page</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { border: 2px solid #ccc; padding: 20px; max-width: 600px; margin: 40px auto; }
+        #success-message { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Account</h1>
+        <h2>Current Email: <span id="email-display">user@example.com</span></h2>
+        <p>A new profile setting has been detected. Please click the button below to apply the update.</p>
+        
+        <button onclick="applyUpdate()">Apply Profile Update</button>
+        
+        <p id="success-message"></p>
+    </div>
 
-<button onclick="applyUpdate()">Apply Profile Update</button>
-
-<script>
-  function applyUpdate() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const nameFromUrl = urlParams.get('name');
-    if (nameFromUrl) {
-      document.getElementById('name-display').textContent = nameFromUrl;
-      alert('Your display name has been forcibly changed!');
-    } else {
-      alert('No changes detected.');
-    }
-  }
-</script>
+    <script>
+        function applyUpdate() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const emailFromUrl = urlParams.get('email'); // Find ?email=...
+            
+          
+            if (emailFromUrl) {
+                document.getElementById('email-display').textContent = emailFromUrl;
+                document.getElementById('success-message').textContent = '!!! YOUR EMAIL HAS BEEN FORCIBLY CHANGED !!!';
+            } else {
+                document.getElementById('success-message').textContent = 'No changes were detected.';
+            }
+        }
+    </script>
+</body>
+</html>

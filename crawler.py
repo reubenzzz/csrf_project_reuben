@@ -1,57 +1,59 @@
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+import sys
 
-def find_csrf_vulnerabilities(url):
-    """
-    Crawls a given URL to find forms and checks if they lack CSRF tokens.
-
-    Args:
-        url: The starting URL to crawl.
-    """
-    print(f"--- Scanning {url} for CSRF Vulnerabilities ---")
-    
+def get_all_forms(url):
+    """Fetch all form tags from the given URL."""
     try:
-        response = requests.get(url)
-        response.raise_for_status() 
-    except requests.exceptions.RequestException as e:
-        print(f"Error: Could not connect to {url}. {e}")
-        return
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        print(f"Error fetching URL: {e}")
+        return []
 
-    soup = BeautifulSoup(response.text, 'html.parser')
-    forms = soup.find_all('form')
+    soup = BeautifulSoup(response.text, "html.parser")
+    return soup.find_all("form")
+
+def form_has_csrf(form):
+    """Check if the form contains a CSRF token."""
+    csrf_keywords = ['csrf', '__RequestVerificationToken', 'token']
+
+    inputs = form.find_all("input")
+    for input_tag in inputs:
+        name = input_tag.get("name", "").lower()
+        id_ = input_tag.get("id", "").lower()
+
+        if any(keyword in name or keyword in id_ for keyword in csrf_keywords):
+            return True
+    return False
+
+def scan_for_csrf(url):
+    """Scan the given URL for forms missing CSRF tokens."""
+    forms = get_all_forms(url)
 
     if not forms:
-        print("Result: No HTML forms found on this page.")
+        print("❌ No forms found on the page.")
         return
 
-    print(f"Found {len(forms)} form(s). Analyzing for anti-CSRF tokens...")
-    vulnerable_form_count = 0
+    print(f"✅ Found {len(forms)} form(s) on {url}\n")
 
     for i, form in enumerate(forms, 1):
-        has_csrf_token = False
-        
-        csrf_token_names = ['csrf_token', 'csrfmiddlewaretoken', 'authenticity_token', '_token', '_csrf']
-        
-       
-        for token_name in csrf_token_names:
-            if form.find('input', {'type': 'hidden', 'name': token_name}):
-                has_csrf_token = True
-                break
-        
-      
-        action = form.get('action', 'N/A')
-        method = form.get('method', 'GET').upper()
+        print(f"--- Form #{i} ---")
+        action = form.get("action")
+        method = form.get("method", "get").upper()
+        print(f"Action: {action}")
+        print(f"Method: {method}")
 
-        print(f"\n- Analyzing Form #{i} (Action: {action}, Method: {method})")
-        if not has_csrf_token:
-            print("  [!] VULNERABILITY DETECTED: Form appears to be missing a CSRF token.")
-            vulnerable_form_count += 1
+        if form_has_csrf(form):
+            print("✅ CSRF token found.\n")
         else:
-            print("  [+] OK: Form appears to have an anti-CSRF token.")
-            
-    print("\n--- Scan Complete ---")
-    if vulnerable_form_count > 0:
-        print(f"Summary: Found {vulnerable_form_count} form(s) that are potentially vulnerable to CSRF.")
-    else:
-        print("Summary: No forms without CSRF tokens were found.")
+            print("⚠️  CSRF token NOT found!\n")
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python crawler.py <URL>")
+        sys.exit(1)
+
+    target_url = sys.argv[1]
+    scan_for_csrf(target_url)
